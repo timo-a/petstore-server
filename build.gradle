@@ -1,0 +1,94 @@
+plugins {
+	id 'org.springframework.boot' version '2.3.4.RELEASE'
+	id 'io.spring.dependency-management' version '1.0.10.RELEASE'
+	id 'java'
+	id "org.openapi.generator" version "5.0.0-beta2"
+	id "io.freefair.lombok" version "5.2.1"	
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-actuator'
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'//crudrepo
+	//implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.security:spring-security-crypto'
+	
+	compileOnly 'org.projectlombok:lombok'
+	runtimeOnly 'com.h2database:h2'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation('org.springframework.boot:spring-boot-starter-test') {
+		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
+	}
+	testImplementation 'org.springframework.security:spring-security-test'
+	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
+	
+}
+
+test {
+	useJUnitPlatform()
+}
+
+/* openapi generator */
+task generateServerApi(type: org.openapitools.generator.gradle.plugin.tasks.GenerateTask) {
+	group = 'petstore-api-generator'
+	description = 'generates server api for backend'
+
+    generatorName = "spring"
+    inputSpec = "$rootDir/src/main/resources/static/petstore_local_copy_v1.0.5.yaml"
+    outputDir = "$buildDir/generated/api"
+    apiPackage = "com.example.petstore.backend.api"
+    invokerPackage = "com.example.petstore.backend.api.invoker"
+    modelPackage = "com.example.petstore.backend.api.model"
+    configOptions = [
+        configPackage: "com.example.petstore.backend.api.configuration",
+        dateLibrary: "java8",
+        interfaceOnly: "true"
+    ]
+}
+compileJava.dependsOn(generateServerApi)
+
+sourceSets {
+    main {
+        java {
+            srcDir "$buildDir/generated/api/src/main/java"
+        }
+    }
+}
+
+dependencies {//the gradle plugin only generates a pom.xml, so these dependencies need to be manually researched
+	annotationProcessor 'io.swagger:swagger-annotations:1.5.22'
+	compile "io.swagger:swagger-annotations:1.5.22"
+	compile "org.openapitools:jackson-databind-nullable:0.2.1"
+	compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+}
+
+/* mapstruct */
+dependencies {
+    implementation 'org.mapstruct:mapstruct:1.4.0.Final'     
+    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.0.Final'
+}
+
+/*tasks.withType(JavaCompile) {
+    options.compilerArgs = [
+            '-Amapstruct.suppressGeneratorTimestamp=true'
+    ]
+}*/
+
+/*  */
+dependencies{
+	compile group: 'org.springdoc', name: 'springdoc-openapi-ui', version: '1.4.4'
+}
