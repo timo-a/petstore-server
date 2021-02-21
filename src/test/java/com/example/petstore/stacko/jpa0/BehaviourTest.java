@@ -65,7 +65,7 @@ public class BehaviourTest {
 
 	}
 	
-	@Test
+	//@Test
 	public void testAddTwoSubjectsThenPupil() {
 
 		Subject math    = new Subject(0, "Maths");
@@ -87,7 +87,7 @@ public class BehaviourTest {
 		
 	}
 	
-	@Test
+	//@Test
 	public void testAddTwoSubjectsThenPupilNoID() {
 
 		Subject math    = new Subject("Maths");
