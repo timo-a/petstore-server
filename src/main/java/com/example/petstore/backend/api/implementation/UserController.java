@@ -14,17 +14,14 @@ import javax.validation.Valid;
 
 import org.springframework.util.MultiValueMap;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.petstore.Session;
-import com.example.petstore.backend.api.ApiUtil;
 import com.example.petstore.backend.api.UserApi;
 import com.example.petstore.backend.api.model.User;
 import com.example.petstore.backend.db.UserBE;
@@ -56,12 +53,12 @@ public class UserController implements UserApi {
 
 		//TODO no response defined in spec for executing request without being logged in - does logged in refer to api key?
 		if(!session.getLoggedIn()) {
-			return new ResponseEntity<User>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 
 		UserBE userBE = userMapper.toBE(user);
 		ur.save(userBE);
-		return new ResponseEntity<User>(user, HttpStatus.OK);
+		return new ResponseEntity<>(user, HttpStatus.OK);
 	}
 	
 	
@@ -79,7 +76,7 @@ public class UserController implements UserApi {
 		PasswordEncoder pe = new BCryptPasswordEncoder();
 		ResponseEntity<String> r;
 		if(oEncryptedPassword.isEmpty()) {
-			r = new ResponseEntity<String>("Invalid username/password supplied", HttpStatus.BAD_REQUEST);
+			r = new ResponseEntity<>("Invalid username/password supplied", HttpStatus.BAD_REQUEST);
 		} else if(pe.matches(password, oEncryptedPassword.get())) {
 			session.setLoggedIn();
 			MultiValueMap<String, String> headers = new HttpHeaders();
@@ -92,9 +89,9 @@ public class UserController implements UserApi {
 			
 			headers.add("X-Expires-After", timeoutstring);
 
-			r = new ResponseEntity<String>("Log in successful", HttpStatus.OK);			
+			r = new ResponseEntity<>("Log in successful", HttpStatus.OK);
 		} else {
-			r = new ResponseEntity<String>("Invalid username/password supplied", HttpStatus.BAD_REQUEST);			
+			r = new ResponseEntity<>("Invalid username/password supplied", HttpStatus.BAD_REQUEST);
 		}
 
 		return r;
@@ -135,7 +132,7 @@ public class UserController implements UserApi {
 		if (results.isEmpty()) {
 			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
-		return new ResponseEntity<User>(userMapper.fromBE(results.get()), HttpStatus.OK);
+		return new ResponseEntity<>(userMapper.fromBE(results.get()), HttpStatus.OK);
 	}
 	
 	private boolean validateUsername(String userName) {
@@ -163,7 +160,7 @@ public class UserController implements UserApi {
 		} 
 				
 		return ur.deleteExistingByUsername(username) 
-				? new ResponseEntity<Void>(HttpStatus.OK)
+				? new ResponseEntity<>(HttpStatus.OK)
 				: new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		
 	}

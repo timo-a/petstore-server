@@ -1,13 +1,17 @@
 package com.example.petstore.backend.api.implementation;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import javax.validation.Valid;
 
+import com.example.petstore.backend.db.CategoryBE;
+import com.example.petstore.backend.db.TagBE;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
@@ -26,7 +30,10 @@ import com.example.petstore.backend.db.mappers.PetMapperImpl;
 //@Service
 @RestController
 public class PetController implements PetApi {
-	
+
+	Logger logger = LoggerFactory.getLogger(PetController.class);
+
+
 	@Autowired
 	PetRepository pr;
 	
@@ -39,32 +46,33 @@ public class PetController implements PetApi {
 		
 		if(id < 0) {
 			System.out.println(0);
-			return new ResponseEntity<Pet>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		Optional<PetBE> oldBEOptional = pr.findById(id);
 		
 		if(oldBEOptional.isEmpty()) {
 			System.out.println(1);
-			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} 
 		
 		if(/* Validation Error TODO: find out when it occurs*/ false) {
 			System.out.println(2);
-			return new ResponseEntity<Pet>(HttpStatus.METHOD_NOT_ALLOWED);
+			return new ResponseEntity<>(HttpStatus.METHOD_NOT_ALLOWED);
 		} 
 	
 		PetBE oldBE = oldBEOptional.get();
 		Pet old = petMapper.fromBE(oldBE);
 		pr.save(petMapper.toBE(pet));
-		return new ResponseEntity<Pet>(old, HttpStatus.OK);
+		return new ResponseEntity<>(old, HttpStatus.OK);
 	}
 	
 	@Override
 	public ResponseEntity<Pet> addPet(@Valid Pet pet) {
 	
 		PetBE petBE = petMapper.toBE(pet);
+
 		pr.save(petBE);
-		return new ResponseEntity<Pet>(pet, HttpStatus.OK);
+		return new ResponseEntity<>(pet, HttpStatus.OK);
 	}
 	
 	@Override
@@ -73,13 +81,13 @@ public class PetController implements PetApi {
 		try {
 			e = StatusEnum.valueOf(status);
 		} catch (IllegalArgumentException iae) {
-			return new ResponseEntity<List<Pet>>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
-		List<Pet> pets = new ArrayList<Pet>();
+		List<Pet> pets = new ArrayList<>();
 		for (PetBE pet : pr.findPetByStatusBK(e)) {
 			pets.add(petMapper.fromBE(pet));
 		}
-		return new ResponseEntity<List<Pet>>(pets, HttpStatus.OK);
+		return new ResponseEntity<>(pets, HttpStatus.OK);
 	}
 	
 	@Override
@@ -88,27 +96,27 @@ public class PetController implements PetApi {
 		
 		//TODO: what is an invalid tag name (400)
 		
-		List<Pet> filtered = StreamSupport.stream(pr.findPetsByAnyTag(tags).spliterator(), false)
+		List<Pet> filtered = pr.findPetsByAnyTag(tags).stream()
 				                          .map(petMapper::fromBE)
 		                                  .collect(Collectors.toList());
 		
-		return new ResponseEntity<List<Pet>>(filtered, HttpStatus.OK);
+		return new ResponseEntity<>(filtered, HttpStatus.OK);
 	}
 	
 	@Override
 	public ResponseEntity<Pet> getPetById(Long petId) {
 
 		if(petId < 0) {
-			return new ResponseEntity<Pet>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		Optional<PetBE> petBEOptional = pr.findById(petId);
 		
 		if(petBEOptional.isEmpty()) {
-			return new ResponseEntity<Pet>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		} 
 			
 		Pet pet = petMapper.fromBE(petBEOptional.get());
-		return new ResponseEntity<Pet>(pet, HttpStatus.OK);
+		return new ResponseEntity<>(pet, HttpStatus.OK);
 	}
 
 	@Override
@@ -121,19 +129,19 @@ public class PetController implements PetApi {
 		
 		//TODO: check if necessary
 		if(petId == null) {
-			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		if(name == null) {
-			return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
 		
 		Optional<PetBE> oPetBE = pr.findById(petId);
 		
 		if(oPetBE.isEmpty()) {
-			return new ResponseEntity<Void>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
-		return new ResponseEntity<Void>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@Override
@@ -142,7 +150,7 @@ public class PetController implements PetApi {
 		
 		pr.deleteById(petId);
 
-		return new ResponseEntity<Void>(HttpStatus.OK);
+		return new ResponseEntity<>(HttpStatus.OK);
 	}
 	
 	@Override
@@ -153,7 +161,7 @@ public class PetController implements PetApi {
 		Optional<PetBE> oPetBE = pr.findById(petId);
 		
 		if(oPetBE.isEmpty()) {
-			return new ResponseEntity<ModelApiResponse>(HttpStatus.NOT_FOUND);
+			return new ResponseEntity<>(HttpStatus.NOT_FOUND);
 		}
 		
 		PetBE petBE = oPetBE.get();

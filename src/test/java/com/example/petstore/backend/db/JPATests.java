@@ -3,6 +3,7 @@ package com.example.petstore.backend.db;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,26 +44,10 @@ public class JPATests {
 		
 		tagRepo.save(tag0);
 		tagRepo.save(tag1);
+		long total = tagRepo.count();
+		assertEquals(2, total);
 	}
 	
-//	@Test
-//	public void savePetWithExistingTag() {
-//
-//		CategoryBE cat = new CategoryBE();
-//		cat.setId(0);
-//		cat.setName("c1");
-//		StatusEnum se = StatusEnum.AVAILABLE;
-//		List<String> urls = Arrays.asList();
-//
-//		List<TagBE> tags = new ArrayList<TagBE>();
-//		tags.add(new TagBE(0, "tag-a"));
-//		
-//		tagRepo.save(tags.get(0));
-//		
-//		PetBE pet0 = new PetBE(0, "a", cat, urls, tags, se);
-//		petRepo.save(pet0);
-//	}
-//	
 //	@Test
 //	public void savePetWithExistingTags() {
 //		
