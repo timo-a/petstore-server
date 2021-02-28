@@ -1,5 +1,7 @@
 package com.example.petstore.backend.db;
 
+import com.example.petstore.backend.api.model.Pet;
+import com.example.petstore.backend.api.model.Tag;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -22,13 +24,15 @@ import com.example.petstore.mockups.Utils;
 
 @ExtendWith(SpringExtension.class)
 @DataJpaTest
-public class PetTests {
+public class PetRepositoryTests {
 
 	@Autowired
 	PetRepository petRepo;
 	
 	@Autowired
 	TagRepository tagRepo;
+
+	@Autowired
 
 	@BeforeEach
 	public void setUp() {
@@ -40,9 +44,9 @@ public class PetTests {
 	public void savePetWithId() {
 
 		//create dummy pet
-		CategoryBE cat = new CategoryBE();
-		cat.setId(0);
-		cat.setName("good pet");
+		CategoryBE cat = new CategoryBE(0L, "good pet",null);
+		//cat.setId(0);
+		//cat.setName("good pet");
 		StatusEnum se = StatusEnum.AVAILABLE;
 		List<String> urls = Collections.emptyList();
 
@@ -82,10 +86,10 @@ public class PetTests {
 		assertThat(petRepo.count()).isEqualTo(1);
 
 	}
-	
+
 	@Test
 	public void savePetWithoutAnyId() {
-		
+
 		CategoryBE cat = new CategoryBE();
 		cat.setName("c1");
 		StatusEnum se = StatusEnum.AVAILABLE;
@@ -94,7 +98,7 @@ public class PetTests {
 		List<TagBE> tags = new ArrayList<>();
 		tags.add(new TagBE());
 		tags.get(0).setName("tag-a");
-				
+
 		PetBE pet0 = new PetBE();
 		pet0.setName("a");
 		pet0.setCategory(cat);
@@ -102,9 +106,34 @@ public class PetTests {
 		pet0.setTags(tags);
 		pet0.setStatus(se);
 		petRepo.save(pet0);
-		
+
 		assertThat(petRepo.count()).isEqualTo(1);
 
 	}
-	
+
+	@Test
+	public void savePetCategory() {
+
+		PetBE pet = new PetBE();
+		pet.setId(0L);
+		pet.setName("string");
+
+		CategoryBE cat = new CategoryBE();
+		cat.setId(0L);
+		cat.setName("string");
+
+		pet.setCategory(cat);
+		pet.setPhotoUrls(Collections.singletonList("string"));
+		TagBE tag = new TagBE();
+		tag.setId(0);
+		tag.setName("string");
+		pet.setTags(Collections.singletonList(tag));
+		pet.setStatus(StatusEnum.AVAILABLE);
+
+		petRepo.save(pet);
+
+		assertThat(petRepo.count()).isEqualTo(1);
+
+	}
+
 }

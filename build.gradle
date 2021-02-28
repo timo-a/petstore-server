@@ -35,7 +35,15 @@ dependencies {
 	}
 	testImplementation 'org.springframework.security:spring-security-test'
 	compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.4'
-	
+	/* e2e tests */
+	testCompile 'org.springframework.boot:spring-boot-starter-test'
+	testCompile 'org.mockito:mockito-junit-jupiter:2.23.0'
+	testCompile 'org.junit.jupiter:junit-jupiter:5.4.2'
+
+	//testCompile 'org.junit.jupiter:junit-jupiter-api:5.4.2'
+	//testCompile 'org.junit.platform:junit-platform-launcher:1.4.0'
+	//testCompile group: 'org.junit.platform', name: 'junit-platform-commons', version: '1.7.1'
+
 }
 
 test {

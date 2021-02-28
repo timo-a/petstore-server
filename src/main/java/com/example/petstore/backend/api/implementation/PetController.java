@@ -68,8 +68,20 @@ public class PetController implements PetApi {
 	
 	@Override
 	public ResponseEntity<Pet> addPet(@Valid Pet pet) {
-	
+		System.out.println("log.deb? " + logger.isDebugEnabled());
+		System.out.println("log.inf? " + logger.isInfoEnabled());
+
+		if (pet.getName() == null) {//we have to do this manually
+			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+		}
+		logger.info("pet received: " + pet.toString());
+
 		PetBE petBE = petMapper.toBE(pet);
+
+		logger.info("pet to be saved: " + petBE.toString());
+
+		//petBE.getCategory().setPet(Collections.singletonList(petBE));
+		//petBE.getTags().get(0).setPets(Collections.singletonList(petBE));
 
 		pr.save(petBE);
 		return new ResponseEntity<>(pet, HttpStatus.OK);
